@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'tasks',
 ]
 
-AUTH_USER_MODEL = 'tasks.User'
+AUTH_USER_MODEL = 'tasks.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
