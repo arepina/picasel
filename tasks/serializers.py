@@ -1,26 +1,27 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
 
+from tasks.models import Task
+from django.contrib.auth.models import User
 
-# model serializer [similar to forms.ModelForm]
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    class Meta:
+        model = Task
+        fields = ("name", "definition", "owner")
+
+
 class UserSerializer(serializers.ModelSerializer):
+    task = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Task.objects.all())
+
     class Meta:
         model = User
-        fields = ("name", "position", "city")
+        fields = ("id", "username", "task")
 
 
-# normal serializer [similar to forms.Form]
-class UserSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=100)
-    position = serializers.CharField(max_length=100)
-    city = serializers.CharField(max_length=100)
 
-    # is called if we save serializer if it do not have an instance
-    def create(self, validated_data):
-        user = User.objects.create(**validated_data)
-        return user
-
-    # is called if we save serializer if it have an instance
-    def update(self, instance, validated_data):
-        instance.__dict__.update(validated_data)
-        return instance
