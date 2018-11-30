@@ -6,6 +6,7 @@ class Task(models.Model):
     name = models.CharField(max_length=100, null=False)
     definition = models.CharField(max_length=100, null=False)
     owner = models.ForeignKey('tasks.CustomUser', related_name='task', on_delete=models.CASCADE)
+    checker = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.name

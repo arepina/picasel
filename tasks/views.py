@@ -1,7 +1,7 @@
 from django.core import serializers
-from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -58,9 +58,26 @@ def user_tasks(request, user):
 
 @api_view(['GET'])
 def task_users(request, task):
-    queryset = CustomUser.objects.filter(task=task)
-    data = serializers.serialize('json', queryset)
-    return Response(data, content_type="None")
+    # return a lot of unnecessary fields
+    # queryset = Task.objects.filter(task=task)
+    # data = serializers.serialize('json', queryset)
+    # return Response(data, content_type="None")
+    users_list = []
+    for user in CustomUser.objects.filter(task=task):
+        user_str = "username:" + user.username + ", position:" + user.position + ", city:" + user.city + ""
+        users_list.append(user_str)
+    content = {'Task users': users_list}
+    return Response(content, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+def check_assign(request, task_id, username):
+    try:
+        tasks = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    Task.objects.filter(id=task_id).update(checker=username)
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
