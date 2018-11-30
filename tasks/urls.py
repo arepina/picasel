@@ -6,14 +6,12 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from tasks import views
 
 urlpatterns = [
-    # path('tasks/', views.TaskView.as_view(), name='task-list'),
-    # path('tasks/<pk>/', views.DetailTaskView.as_view()),
-    # path('users/', views.CustomUserView.as_view(), name='user-list'),
-    # path('users/<pk>/', views.DetailCustomUserView.as_view()),
     url(r'^tasks/$', views.TaskView.as_view(), name='task-list'),
     url(r'^tasks/(?P<pk>\d+)/$', views.DetailTaskView.as_view()),
     url(r'^users/$', views.CustomUserView.as_view(), name='user-list'),
     url(r'^users/(?P<pk>\d+)/$', views.DetailCustomUserView.as_view()),
+    url(r'^user_tasks/(?P<user>\d+)/$', views.user_tasks),
+    url(r'^task_users/(?P<task>\d+)/$', views.task_users),
     path('', views.api_root),
 ]
 

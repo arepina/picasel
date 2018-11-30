@@ -1,3 +1,5 @@
+from django.core import serializers
+from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.decorators import api_view
@@ -48,113 +50,22 @@ class DetailCustomUserView(generics.RetrieveUpdateDestroyAPIView):
 
 
 @api_view(['GET'])
+def user_tasks(request, user):
+    queryset = Task.objects.filter(owner=user)
+    data = serializers.serialize('json', queryset)
+    return Response(data, content_type="None")
+
+
+@api_view(['GET'])
+def task_users(request, task):
+    queryset = CustomUser.objects.filter(task=task)
+    data = serializers.serialize('json', queryset)
+    return Response(data, content_type="None")
+
+
+@api_view(['GET'])
 def api_root(request, format=None):
     return Response({
         'users': reverse('user-list', request=request, format=format),
         'tasks': reverse('task-list', request=request, format=format)
     })
-
-# # create user
-# @api_view(["POST"])
-# def create_user(request):
-#     serializer = CustomUserSerializer(request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response({"message": "User created"})
-#     else:
-#         data = {
-#             "error": True,
-#             "errors": serializer.errors,
-#         }
-#         return Response(data)
-#
-#
-# # get user
-# @api_view(["GET"])
-# def get_user(request, pk):
-#     user = CustomUser.objects.get(id=pk)
-#     serializer = CustomUserSerializer(user)
-#     return Response(serializer.data)
-#
-#
-# # get users list
-# @api_view(["GET"])
-# def get_users_list(request):
-#     users = CustomUser.objects.all()
-#     serializer = CustomUserSerializer(users, many=True)
-#     return Response(serializer.data)
-#
-#
-# # update user
-# @api_view(["GET", "PUT"])
-# def update_user(request, pk):
-#     user = CustomUser.objects.get(id=pk)
-#     if request.method == "PUT":
-#         serializer = CustomUserSerializer(user, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response({"error": serializer.errors, "error": True})
-#     serializer = CustomUserSerializer(user)
-#     return Response(serializer.data)
-#
-#
-# # delete user
-# def delete_user(request, pk):
-#     user = get_object_or_404(CustomUser, id=pk)
-#     user.delete()
-#     return Response({"message": "Deleted"})
-#
-#
-# # create task
-# @api_view(["POST"])
-# def create_task(request):
-#     serializer = TaskSerializer(request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response({"message": "Task created"})
-#     else:
-#         data = {
-#             "error": True,
-#             "errors": serializer.errors,
-#         }
-#         return Response(data)
-#
-#
-# # get task
-# @api_view(["GET"])
-# def get_task(request, pk):
-#     task = Task.objects.get(id=pk)
-#     serializer = TaskSerializer(task)
-#     return Response(serializer.data)
-#
-#
-# # get tasks list
-# @api_view(["GET"])
-# def get_tasks_list(request):
-#     tasks = Task.objects.all()
-#     serializer = TaskSerializer(tasks, many=True)
-#     return Response(serializer.data)
-#
-#
-# # update task
-# @api_view(["GET", "PUT"])
-# def update_task(request, pk):
-#     task = Task.objects.get(id=pk)
-#     if request.method == "PUT":
-#         serializer = TaskSerializer(task, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response({"error": serializer.errors, "error": True})
-#     serializer = TaskSerializer(task)
-#     return Response(serializer.data)
-#
-#
-# # delete task
-# def delete_task(request, pk):
-#     task = get_object_or_404(Task, id=pk)
-#     task.delete()
-#     return Response({"message": "Deleted"})
